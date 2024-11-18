@@ -1,0 +1,115 @@
+import random
+from tkinter import messagebox 
+import tkinter as tk 
+
+#Data
+pilihan=["makan", "minum", "tidur", "musik", "gelas", "angin", "hitam", "putih", "hijau", "buram",
+       "merah", "kuning", "kulit", "senja", "deras", "terang", "hujan", "kunci", "melon", "kursi", 
+       "kipas", "bunga", "jalan", "bulan", "musim", "pasir", "rumah", "tanah", "sandi", "sawah", 
+       "bayam", "lemon", "kabut", "kapal", "jambu", "garam", "tobat", "kelor", "pipit", "keran", 
+       "bibir", "malas", "bosan", "sehat", "beras", "tebal", "tipis", "garpu", "sendi", "pintu"]
+
+generated=pilihan[random.randrange(0,50)]
+
+#Fungsi-fungsi
+
+class Gamekata:
+    def __init__(self,pilihan):
+        self.generate = pilihan
+        self.huruf_benar= {1 :'' ,2 :'',3:'',4:'',5:''}
+        self.sampah=set([])
+        self.salah_tempat={1 :'' ,2 :'',3:'',4:'',5:''}
+    def benar(self,jawaban):
+            for i in range(0,5):
+                if jawaban[i]==self.generate[i]:
+                    self.huruf_benar.update({i+1:jawaban[i]})
+                elif jawaban[i] in self.generate and jawaban[i]!=self.generate[i]:
+                    self.salah_tempat.update({i+1:jawaban[i]})
+            if jawaban==self.generate:
+                return True
+
+    def salah(self,jawaban):
+        for i in range(0,5):
+            if jawaban[i] not in generated:
+                self.sampah.add(jawaban[i])
+    def return_benar(self):
+        return self.huruf_benar
+    def return_sampah(self):
+        return self.sampah
+    def return_salah_tempat(self):
+        return self.salah_tempat
+
+
+        
+
+game=Gamekata(generated)
+
+#Elemen GUI
+class maingame:
+    def __init__(self,app):
+        app.title('Game Penebakan Kata')
+        font_stlye= ("Times New Roman",16)  
+        bg_color= 'gray27'
+        self.kesempatan=6
+        
+        Welcome_message=  tk.Label(app,text="Selamat datang di game tebak kata", font=font_stlye,bg=bg_color)
+        Welcome_message.place(x= 10,y=10)
+
+        self.entry_jawaban= tk.Entry(app)
+        self.entry_jawaban.place(x=10,y=400)
+        
+        self.label_sampah=tk.Label(app,text='',font=font_stlye,bg=bg_color)
+        self.label_sampah.place(x=40,y=80)
+
+        self.label_tips=tk.Label(app,text='',font=font_stlye,bg=bg_color)
+        self.label_tips.place(x=40,y=120)
+
+        tombol=tk.Button(app,text="submit",font=font_stlye,bg=bg_color,command=self.allcoms )
+        tombol.place(x=60,y=425)
+
+    def update_label(self):
+        new_text = game.return_sampah()  
+        self.label_sampah.config(text=f"Huruf yang tidak digunakan:{new_text}")
+
+
+    def cek_jawaban(self):
+        if self.kesempatan<1:
+            messagebox.showinfo("anda kalah",'kesempatan habis')
+            quit()
+        if len(self.entry_jawaban.get())!=5:
+            messagebox.showerror('Error','Mohon masukkan hanya 5 huruf')
+        elif game.benar(str(self.entry_jawaban.get())):
+            messagebox.showinfo('Anda menang',f'yay\n Anda membutuhkan {7-self.kesempatan} tebakan')
+            quit()
+        else:
+            messagebox.showinfo('tebakan salah','oh no')
+            game.salah(str(self.entry_jawaban.get()))
+            print(game.return_sampah())
+            self.kesempatan-=1
+    def showtips(self):
+        kalimat_tip=''
+        for i in range(0,5):
+            if game.huruf_benar[i+1]!='':
+                kalimat_tip += f'huruf ke -{i+1} benar, yaitu {game.huruf_benar[i+1]} \n'
+                print(kalimat_tip)
+        self.label_tips.config(text=kalimat_tip)
+
+    def salah_tempat(self):
+        pass
+
+    def allcoms(self):
+        self.cek_jawaban()
+        self.update_label()
+        self.showtips()
+
+        print("berhasil run")
+        print(generated)
+
+
+if __name__ == "__main__":  
+    app=tk.Tk()
+    apps=maingame(app)
+    app.geometry('720x480')
+    app.configure(bg= 'royalblue')
+    app.resizable(False, False) 
+    app.mainloop()
