@@ -16,7 +16,6 @@ class Logic:
     def __init__(self,pilihan):
         self.generate = pilihan
         self.huruf_benar= {1 :'' ,2 :'',3:'',4:'',5:''}
-        self.sampah=set([])
         self.salah_tempat={1 :list(self.generate) ,2 :list(self.generate),3:list(self.generate),4:list(self.generate),5:list(self.generate)}
 
     def salah_huruf(self):
