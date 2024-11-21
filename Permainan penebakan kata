@@ -1,20 +1,17 @@
-
 import random
 from tkinter import messagebox 
 import tkinter as tk 
-pilihan=["makan", "minum", "tidur", "musik", "gelas", "angin", "hitam", "putih", "hijau", "buram",
+kata_kunci=["makan", "minum", "tidur", "musik", "gelas", "angin", "hitam", "putih", "hijau", "buram",
        "merah", "kuning", "kulit", "senja", "deras", "terang", "hujan", "kunci", "melon", "kursi", 
        "kipas", "bunga", "jalan", "bulan", "musim", "pasir", "rumah", "tanah", "sandi", "sawah", 
        "bayam", "lemon", "kabut", "kapal", "jambu", "garam", "tobat", "kelor", "pipit", "keran", 
        "bibir", "malas", "bosan", "sehat", "beras", "tebal", "tipis", "garpu", "sendi", "pintu"]
 
-generated=random.choice(pilihan)
-
 #Fungsi-fungsi
 
 class Logic:
-    def __init__(self,pilihan):
-        self.generate = pilihan
+    def __init__(self,kata_kunci):
+        self.generate = kata_kunci
         self.huruf_benar= {1 :'' ,2 :'',3:'',4:'',5:''}
         self.salah_tempat={1 :list(self.generate) ,2 :list(self.generate),3:list(self.generate),4:list(self.generate),5:list(self.generate)}
 
@@ -36,8 +33,7 @@ class Logic:
     def return_salah_tempat(self):
         return self.salah_tempat
 
-game=Logic(generated)
-game.salah_huruf()
+
 #Elemen GUI
 class mainmenu:
     def __init__(self,main):
@@ -47,6 +43,7 @@ class mainmenu:
         self.menu.configure(bg=bgcolor)
         self.menu.title('Menu')
         self.menu.geometry('480x250')
+        self.menu.resizable(False, False) 
         label_tutorial_title=tk.Label(self.menu,text='Cara Bermain:',font=('Myriad Pro',18),bg=bgcolor)
         label_tutorial_title.grid(row=0,column=0)
 
@@ -56,23 +53,32 @@ class mainmenu:
         label_tutorial4=tk.Label(self.menu,text=" -Kuning berarti huruf pada posisi yang salah.",font=Basicfont,bg='khaki2')
         label_tutorial5=tk.Label(self.menu,text=" -Hijau berarti huruf pada posisi yang benar.",font=Basicfont,bg='pale green')
 
-        label_tutorial1.grid(row=1,column=0,sticky='nsw')
-        label_tutorial2.grid(row=2,column=0,sticky='nsw')
-        label_tutorial3.grid(row=3,column=0,sticky='nsw')
-        label_tutorial4.grid(row=4,column=0,sticky='nsw')
-        label_tutorial5.grid(row=5,column=0,sticky='nsw')
+        label_tutorial1.grid(row=1,column=0,sticky='nsw',columnspan=2)
+        label_tutorial2.grid(row=2,column=0,sticky='nsw',columnspan=2)
+        label_tutorial3.grid(row=3,column=0,sticky='nsw',columnspan=2)
+        label_tutorial4.grid(row=4,column=0,sticky='nsw',columnspan=2)
+        label_tutorial5.grid(row=5,column=0,sticky='nsw',columnspan=2)
 
-        self.menu.rowconfigure((0,1,2,3,4,5,6),weight=1)
-        self.menu.columnconfigure((0),weight=1)
-        self.start_btn=tk.Button(self.menu,text='Mulai',font=('arial',16),bg='navajo white',command=self.mulai_game)
+        self.menu.rowconfigure((0,1,2,3,4,5,6),weight=1,uniform='a')
+        self.menu.columnconfigure((0,1),weight=1,uniform='a')
+        self.start_btn=tk.Button(self.menu,text='Mulai',font=('arial',16),bg='DarkSeaGreen1',command=self.mulai_game)
         self.start_btn.grid(row=6,column=0)
+
+        self.exit_btn=tk.Button(self.menu,text='Keluar',font=('arial',16),bg='salmon',command=self.exit)
+        self.exit_btn.grid(row=6,column=1)
 
     def mulai_game(self):
         self.menu.destroy()
         maingame()
+    
+    def exit(self):
+        self.menu.destroy()
 
 class maingame:
     def __init__(self):
+        self.generated=random.choice(kata_kunci)
+        self.game=Logic(self.generated)
+        self.game.salah_huruf()
         self.main=tk.Tk()
         self.main.title('Game Penebakan Kata!')
         font_stlye= ("Times New Roman",18) 
@@ -94,15 +100,18 @@ class maingame:
 
         tombol=tk.Button(self.main,text="Enter",font=('Sylfaen',12),bg='navajo white',command=self.cek_jawaban)
         tombol.grid(row=1,column=1,sticky='w')
+
+        tombol_restart=tk.Button(self.main,text='Restart',font=('Sylfaen',12),bg='navajo white',command=self.restart)
+        tombol_restart.grid(row=1,column=4)
     
     def printlabel(self):
         answer_font= ('Georgia',32)
         self.jawaban=str(self.entry_jawaban.get()).lower()
         for i in range(0,5):
             self.label=tk.Label(self.main,font=answer_font)
-            if self.jawaban[i] == game.return_benar()[i+1]:
+            if self.jawaban[i] == self.game.return_benar()[i+1]:
                 self.label.config(text=self.jawaban[i].upper(),bg='pale green',fg='white')
-            elif self.jawaban[i] in game.return_salah_tempat()[i+1]:
+            elif self.jawaban[i] in self.game.return_salah_tempat()[i+1]:
                 self.label.config(text=self.jawaban[i].upper(),bg='khaki2',fg='white')
             else:
                 self.label.config(text=self.jawaban[i].upper(),bg='tomato',fg='white')
@@ -113,11 +122,11 @@ class maingame:
             messagebox.showerror('Error','Mohon masukkan hanya 5 huruf')
             self.clear_input()
         else:
-            game.evaluasi(str(self.entry_jawaban.get()).lower())   
-            if game.evaluasi(str(self.entry_jawaban.get()).lower()): #akan True jika sama dengan kata pilihan
+            self.game.evaluasi(str(self.entry_jawaban.get()).lower())   
+            if self.game.evaluasi(str(self.entry_jawaban.get()).lower()): #akan True jika sama dengan kata pilihan
                 self.printlabel()
-                messagebox.showinfo('Anda menang',f'Anda berhasil menebak kata!\n Anda membutuhkan {self.kesempatan+1} tebakan\nKatanya adalah {generated}!')
-                self.main.destroy()            
+                messagebox.showinfo('Anda menang',f'Anda berhasil menebak kata!\n Anda membutuhkan {self.kesempatan+1} tebakan\nKatanya adalah {self.generated}!')
+                self.restart()          
 
             else: #Jika sema belum benar
                 self.printlabel()
@@ -125,8 +134,11 @@ class maingame:
                 self.kesempatan+=1
                 self.clear_input()
         if self.kesempatan>5:
-            messagebox.showinfo("Kalah",f'kesempatan habis \nKatanya adalah {generated}!')
-            self.main.destroy() 
+            messagebox.showinfo("Kalah",f'kesempatan habis \nKatanya adalah {self.generated}!')
+            self.restart()
+    def restart(self):
+            self.main.destroy()
+            mainmenu(tk.Tk())        
 
     def clear_input(self):
         self.entry_jawaban.delete(0, tk.END)
