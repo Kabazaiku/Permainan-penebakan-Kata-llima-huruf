@@ -1,3 +1,4 @@
+
 import random
 from tkinter import messagebox 
 import tkinter as tk 
@@ -134,8 +135,9 @@ class maingame:
                 self.kesempatan+=1
                 self.clear_input()
         if self.kesempatan>5:
-            messagebox.showinfo("Kalah",f'kesempatan habis \nKatanya adalah {self.generated}!')
+            messagebox.showinfo("Game Over",f'kesempatan habis \nKatanya adalah {self.generated}!')
             self.restart()
+            
     def restart(self):
             self.main.destroy()
             mainmenu(tk.Tk())        
